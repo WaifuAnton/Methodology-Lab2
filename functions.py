@@ -14,25 +14,17 @@ def solve_parallel(matrix: Matrix, deep=0):
         return t
     pos = t.get_finalize_candidate_pos()
     deep += 1
-    if deep < 2:
-        pipe1 = mp.Pipe()
-        pipe2 = mp.Pipe()
-        process1 = mp.Process(target=solve_by_finalize, name=f"finalize_{deep}",
-                              args=(pos, t, pipe1[0], deep))
-        process2 = mp.Process(target=solve_by_color, name=f"color_{deep}",
-                              args=(pos, t, pipe2[0], deep))
-        process1.start()
-        process2.start()
-        solved_by_finalize = pipe1[1].recv()
-        solved_by_color = pipe2[1].recv()
-        process1.join()
-        process2.join()
-        pipe1[1].close()
-        pipe2[1].close()
-        return solved_by_finalize if solved_by_finalize != "error" else solved_by_color
+    if deep < 10:
+        pipe = mp.Pipe()
+        process = mp.Process(target=solve_by_color, name=f"color_{deep}",
+                             args=(pos, t, pipe[0], deep))
+        process.start()
+        solved_by_color = pipe[1].recv()
+        process.join()
+        pipe[1].close()
+        return solved_by_color
     else:
-        solved_by_finalize = solve_by_finalize(pos, t, None, deep)
-        return solved_by_finalize if solved_by_finalize != "error" else solve_by_color(pos, t, None, deep)
+        return solve_by_color(pos, t, None, deep)
 
 
 def solve_by_finalize(pos, t, pipe, deep):
@@ -109,4 +101,4 @@ if __name__ == "__main__":
                 [6, 1, 5, 4, 4, 4]]
     start = time.time()
     solve_parallel(Matrix(test_arr)).print()
-    print(f"spent time: {time.time()-start}")
+    print(f"spent time: {time.time() - start}")
