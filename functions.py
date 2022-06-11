@@ -24,7 +24,7 @@ def solve_parallel(matrix: Matrix, deep=0):
         pipe[1].close()
         return solved_by_color
     else:
-        return solve_by_color(pos, t, None, deep)
+        return solve_by_color(t, None, deep)
 
 
 def solve_by_finalize(pos, t, pipe, deep):
@@ -36,9 +36,7 @@ def solve_by_finalize(pos, t, pipe, deep):
         return solve_parallel(t_copy, deep)
 
 
-def solve_by_color(pos, t, pipe, deep):
-    if t.color_cell(pos[0], pos[1]) == "error":
-        return "error"
+def solve_by_color(t, pipe, deep):
     if pipe is not None:
         pipe.send(solve_parallel(t, deep))
     else:
