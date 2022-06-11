@@ -47,7 +47,7 @@ async def test() -> list[list[Cell]]:
                 [3, 3, 3, 5, 2, 1],
                 [4, 2, 1, 6, 5, 3],
                 [6, 1, 5, 4, 4, 4]]
-    return solve(Matrix(test_arr)).cells
+    return solve_parallel(Matrix(test_arr)).cells
 
 
 @app.post("/solve", tags=["solve"], name="Solver", response_model=list[list[Cell]], responses={

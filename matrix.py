@@ -16,6 +16,15 @@ class Cell(BaseModel):
     def __eq__(self, other):
         return self.value == other.value and self.state == other.state
 
+    def __str__(self):
+        return f"{self.value}-{'C' if self.state == State.Colored else 'NC'}"
+
+    def __unicode__(self):
+        return f"{self.value}-{'C' if self.state == State.Colored else 'NC'}"
+
+    def __repr__(self):
+        return f"{self.value}-{'C' if self.state == State.Colored else 'NC'}"
+
 
 class NoSolutionExistsError(ValueError):
     pass
@@ -115,7 +124,7 @@ class Matrix:
             r = row + r_offs
             c = column + c_offs
             if 0 <= r < self.size and 0 <= c < self.size and self.cells[r][c].state == State.Colored:
-                raise NoSolutionExistsError("Colored neighbor found")
+                return "error"
             r_offs, c_offs = -c_offs, r_offs
         cell_set = row * self.size + column + 1
         if row == 0 or row == self.size - 1 or column == 0 or column == self.size - 1:
@@ -132,7 +141,7 @@ class Matrix:
                 if diagonal_root != cell_root:
                     self.deleted_trees.link_sets(diagonal_root, cell_root)
                 else:
-                    raise NoSolutionExistsError("Circular neighbors found")
+                    return "error"
             r_offs, c_offs = -c_offs, r_offs
         cell.state = State.Colored
         value = cell.value
@@ -184,3 +193,7 @@ class Matrix:
                         r_max = r
                         c_max = c
         return r_max, c_max
+
+    def print(self):
+        for cell in self.cells:
+            print(cell)
